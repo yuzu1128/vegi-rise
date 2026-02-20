@@ -1,0 +1,344 @@
+/* components.css - Remaining Components */
+
+/* ---- iOS Safe Area ---- */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  #bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  }
+
+  #app {
+    padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  }
+}
+
+/* ---- Category Filter Buttons ---- */
+.cat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.cat-btn.active {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  border-color: var(--accent-green);
+  font-weight: 600;
+}
+
+.cat-btn:active {
+  transform: scale(var(--scale-tap));
+}
+
+/* ---- Icon Images (replacing emoji) ---- */
+.icon-section-title {
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  margin-right: 4px;
+}
+
+.icon-section {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.icon-badge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.icon-badge-detail,
+.icon-badge-popup {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.icon-cat-btn {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+}
+
+.icon-cat-popup {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+}
+
+.nav-icon img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* ---- List Rows (key-value) ---- */
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.list-row-label {
+  color: var(--text-secondary);
+}
+
+.list-row-value {
+  font-weight: 600;
+}
+
+/* ---- Stats Overview (horizontal) ---- */
+.stats-overview {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.stats-item-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stats-item-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ---- Category Filter ---- */
+.cat-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---- Record Items ---- */
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-delete {
+  background: none;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.record-delete:active {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+/* ---- Section Subtitle ---- */
+.section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ---- Score Display ---- */
+.score-display {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.score-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* ---- Detail Row ---- */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.detail-row-value {
+  font-weight: 600;
+}
+
+/* ---- Status Badge ---- */
+.status-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.is-unlocked {
+  background: var(--green-alpha-15);
+  color: var(--accent-green);
+}
+
+.status-badge.is-locked {
+  background: rgba(160, 160, 176, 0.15);
+  color: var(--text-muted);
+}
+
+/* ---- Progress Text ---- */
+.progress-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ---- Empty State ---- */
+.empty-state {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ---- Modal Center Content ---- */
+.modal-center {
+  text-align: center;
+}
+
+/* ---- Badge Detail ---- */
+.badge-detail-icon {
+  margin-bottom: 12px;
+}
+
+.badge-detail-icon.is-locked {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.badge-detail-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.badge-detail-cat {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* ---- Records Section ---- */
+.records-section {
+  margin-top: 16px;
+}
+
+.records-header {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ---- Wakeup Meta ---- */
+.wakeup-meta {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.wakeup-status-area {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ---- Veg Total ---- */
+.veg-total {
+  font-weight: 700;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--accent-green);
+}
+
+/* ---- Wakeup Summary ---- */
+.wakeup-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.wakeup-summary-label {
+  color: var(--text-secondary);
+}
+
+.wakeup-summary-value {
+  font-weight: 600;
+}
+
+/* ---- Achievement Count ---- */
+.achievement-count {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ---- Modal Action ---- */
+.modal-action {
+  margin-top: 20px;
+}
+
+/* ---- Veg Progress ---- */
+.veg-progress {
+  margin-top: 12px;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+/* ---- Utility Classes ---- */
+.time-seconds { font-size: 24px; opacity: 0.5; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.text-orange { color: var(--accent-orange); }

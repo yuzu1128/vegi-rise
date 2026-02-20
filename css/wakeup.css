@@ -1,0 +1,48 @@
+/* wakeup.css - Wakeup Display, Time & Button */
+
+.wakeup-display {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.wakeup-time {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wakeup-time.recorded {
+  color: var(--accent-green);
+}
+
+.wakeup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  font-weight: 700;
+  font-size: 18px;
+  border: none;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wakeup-btn:active {
+  transform: scale(var(--scale-tap));
+  background: var(--accent-green-dark);
+}
+
+.wakeup-btn:disabled {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}

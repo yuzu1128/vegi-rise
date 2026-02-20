@@ -1,0 +1,108 @@
+/* calendar.css - Calendar Grid & Score Cells */
+
+.calendar {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendar-header .month-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calendar-header button:active {
+  background: var(--bg-card-hover);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cal-cell.empty {
+  cursor: default;
+}
+
+.cal-cell[data-score="0"] {
+  background: var(--cal-score-0);
+  color: var(--text-secondary);
+}
+
+.cal-cell[data-score="1"] {
+  background: var(--cal-score-1);
+  color: var(--text-primary);
+}
+
+.cal-cell[data-score="2"] {
+  background: var(--cal-score-2);
+  color: var(--text-primary);
+}
+
+.cal-cell[data-score="3"] {
+  background: var(--cal-score-3);
+  color: var(--text-primary);
+}
+
+.cal-cell[data-score="4"] {
+  background: var(--cal-score-4);
+  color: var(--bg-primary);
+  font-weight: 700;
+}
+
+.cal-cell.today {
+  border: 2px solid var(--accent-yellow);
+}
+
+.cal-cell:active:not(.empty) {
+  transform: scale(0.9);
+}

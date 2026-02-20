@@ -19,28 +19,32 @@ export function renderSettings(state) {
 
     <!-- Vegetable Goals -->
     <div class="card">
-      <div class="card-title">${iconImg('🥦', 'icon-section-title')} 野菜目標</div>
-      <div class="form-group">
-        <label>最低目標 (g)</label>
-        <input type="number" id="set-veg-min" min="1" max="9999" value="${vegGoals.minimum}">
-      </div>
-      <div class="form-group">
-        <label>標準目標 (g)</label>
-        <input type="number" id="set-veg-std" min="1" max="9999" value="${vegGoals.standard}">
-      </div>
-      <div class="form-group">
-        <label>目標 (g)</label>
-        <input type="number" id="set-veg-target" min="1" max="9999" value="${vegGoals.target}">
-      </div>
+      <fieldset class="settings-fieldset">
+        <legend class="card-title">${iconImg('🥦', 'icon-section-title')} 野菜目標</legend>
+        <div class="form-group">
+          <label for="set-veg-min">最低目標 (g)</label>
+          <input type="number" id="set-veg-min" min="1" max="9999" value="${vegGoals.minimum}">
+        </div>
+        <div class="form-group">
+          <label for="set-veg-std">標準目標 (g)</label>
+          <input type="number" id="set-veg-std" min="1" max="9999" value="${vegGoals.standard}">
+        </div>
+        <div class="form-group">
+          <label for="set-veg-target">目標 (g)</label>
+          <input type="number" id="set-veg-target" min="1" max="9999" value="${vegGoals.target}">
+        </div>
+      </fieldset>
     </div>
 
     <!-- Wakeup Goal -->
     <div class="card">
-      <div class="card-title">${iconImg('⏰', 'icon-section-title')} 起床目標</div>
-      <div class="form-group">
-        <label>目標起床時間</label>
-        <input type="time" id="set-wakeup-time" value="${settings.wakeupGoalTime || '06:00'}">
-      </div>
+      <fieldset class="settings-fieldset">
+        <legend class="card-title">${iconImg('⏰', 'icon-section-title')} 起床目標</legend>
+        <div class="form-group">
+          <label for="set-wakeup-time">目標起床時間</label>
+          <input type="time" id="set-wakeup-time" value="${settings.wakeupGoalTime || '06:00'}">
+        </div>
+      </fieldset>
     </div>
 
     <!-- Sound -->

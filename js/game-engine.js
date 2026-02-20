@@ -3,18 +3,22 @@
 // Bug fixes: goal persistence (DB), perfectWakeupStreak date gap, comboStreak reset
 
 import { DB } from './db.js';
-import { getToday } from './utils.js';
+import { getToday, formatDate } from './utils.js';
 import { Gamification } from './gamification.js';
 import { checkNewAchievements } from './achievements.js';
 import { Sound } from './sound.js';
 import { showToast, showXPGain, showAchievementPopup } from './ui.js';
+import { SCORE_THRESHOLDS } from './constants.js';
 
 // --- Helper ---
 
 function getYesterday(todayStr) {
+  if (!todayStr || typeof todayStr !== 'string') {
+    throw new Error('getYesterday requires a valid date string');
+  }
   const [y, m, d] = todayStr.split('-').map(Number);
   const yesterday = new Date(y, m - 1, d - 1);
-  return `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+  return formatDate(yesterday);
 }
 
 // --- Sub-processors (not exported) ---
@@ -66,7 +70,7 @@ async function processVegetableRecord(gameState, settings, today) {
   }
 
   await DB.saveDailyGoals(dailyGoals);
-  return xp;
+  return { xp, dayTotal };
 }
 
 async function processWakeupRecord(gameState, data, today) {
@@ -74,7 +78,7 @@ async function processWakeupRecord(gameState, data, today) {
   gameState.totalWakeupRecords++;
   xp += Gamification.XP.wakeupRecord;
 
-  if (data.score >= 90) {
+  if (data.score >= SCORE_THRESHOLDS.PERFECT_WAKEUP) {
     gameState.perfectWakeupCount++;
     xp += Gamification.XP.perfectWakeup;
 
@@ -95,8 +99,8 @@ async function processWakeupRecord(gameState, data, today) {
 
   gameState.lastWakeupDate = today;
 
-  // Early bird (before 05:30)
-  if (data.time < '05:30') {
+  // HH:MM format string comparison works correctly in lexicographic order
+  if (data.time < SCORE_THRESHOLDS.EARLY_BIRD_TIME) {
     gameState.earlyBirdCount++;
   }
 
@@ -138,16 +142,20 @@ function updateStreaks(gameState, today) {
   return xp;
 }
 
-async function checkCombo(gameState, settings, today) {
+async function checkCombo(gameState, settings, today, cachedDayTotal) {
   let xp = 0;
   const dailyGoals = await DB.getDailyGoals(today);
 
   if (dailyGoals.combo) return 0; // Already achieved combo today
 
-  const dayVegTotal = await DB.getDayVegetableTotal(today);
-  const dayWakeup = await DB.getWakeup(today);
+  const [dayVegTotal, dayWakeup] = await Promise.all([
+    cachedDayTotal != null ? cachedDayTotal : DB.getDayVegetableTotal(today),
+    DB.getWakeup(today),
+  ]);
 
-  if (dayVegTotal >= settings.vegetableGoals.minimum && dayWakeup && dayWakeup.score >= 90) {
+  const vegGoalMet = dayVegTotal >= settings.vegetableGoals.minimum;
+  const wakeupPerfect = dayWakeup && dayWakeup.score >= SCORE_THRESHOLDS.PERFECT_WAKEUP;
+  if (vegGoalMet && wakeupPerfect) {
     dailyGoals.combo = true;
     gameState.comboCount++;
 
@@ -176,8 +184,7 @@ async function checkCombo(gameState, settings, today) {
 // --- Main export ---
 
 export async function processRecord(type, data, state) {
-  let gameState = await DB.getGameState();
-  const settings = await DB.getSettings();
+  const [gameState, settings] = await Promise.all([DB.getGameState(), DB.getSettings()]);
   let xpGained = 0;
   const today = getToday();
 
@@ -185,12 +192,16 @@ export async function processRecord(type, data, state) {
     gameState.firstRecordDate = today;
   }
 
+  let vegCachedTotal = null;
+
   if (type === 'vegetable') {
     gameState.totalVegetableRecords++;
     gameState.totalVegetableGrams += data.grams;
     xpGained += Gamification.XP.vegetableRecord;
     Sound.record();
-    xpGained += await processVegetableRecord(gameState, settings, today);
+    const vegResult = await processVegetableRecord(gameState, settings, today);
+    xpGained += vegResult.xp;
+    vegCachedTotal = vegResult.dayTotal;
   }
 
   if (type === 'wakeup') {
@@ -204,7 +215,7 @@ export async function processRecord(type, data, state) {
   }
 
   // Combo check
-  xpGained += await checkCombo(gameState, settings, today);
+  xpGained += await checkCombo(gameState, settings, today, vegCachedTotal);
 
   // Award XP and check level up
   const oldLevel = Gamification.calculateLevel(gameState.xp).level;

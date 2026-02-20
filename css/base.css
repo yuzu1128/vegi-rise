@@ -1,0 +1,76 @@
+/* base.css - Root Variables, Reset & Base Layout */
+
+:root {
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-card-hover: #1e2d4f;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0b0;
+  --text-muted: #606070;
+  --accent-green: #4ade80;
+  --accent-green-light: #86efac;
+  --accent-green-dark: #22c55e;
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+  --gradient-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --border-color: #2a2a3e;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(26, 26, 46, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --nav-height: 65px;
+
+  /* Calendar score colors */
+  --cal-score-0: #2a2a3e;
+  --cal-score-1: #1a4a2e;
+  --cal-score-2: #2a6a3e;
+  --cal-score-3: #3a8a4e;
+  --cal-score-4: var(--accent-green);
+
+  /* Alpha colors */
+  --green-alpha-10: rgba(74, 222, 128, 0.1);
+  --green-alpha-15: rgba(74, 222, 128, 0.15);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+
+  /* Scale values */
+  --scale-tap: 0.95;
+  --scale-active: 1.15;
+}
+
+/* ---- Reset & Base ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: var(--nav-height);
+}
+
+#page-content {
+  padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}

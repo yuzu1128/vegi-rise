@@ -1,0 +1,48 @@
+/* layout.css - Page Header, Section Header, Divider, Hidden */
+
+/* ---- Section Header ---- */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ---- Page Header ---- */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6B5CE7 100%);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+}
+
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.page-header p {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ---- Divider ---- */
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 16px 0;
+}
+
+/* ---- Hidden ---- */
+.hidden {
+  display: none !important;
+}

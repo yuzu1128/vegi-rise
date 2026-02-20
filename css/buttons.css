@@ -1,0 +1,146 @@
+/* buttons.css - Button Styles, Preset Buttons, Veg Input */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:active {
+  transform: scale(var(--scale-tap));
+  background: var(--accent-green-dark);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary:disabled:active {
+  transform: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--accent-green);
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid var(--accent-green);
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:active {
+  transform: scale(var(--scale-tap));
+  background: var(--green-alpha-10);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--accent-red);
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid var(--accent-red);
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-danger:active {
+  transform: scale(var(--scale-tap));
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* ---- Preset Buttons ---- */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preset-btn {
+  padding: 10px 4px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.preset-btn:active {
+  transform: scale(0.93);
+}
+
+.preset-btn.active {
+  background: var(--green-alpha-15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+/* ---- Veg Input Row ---- */
+.veg-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.veg-input-field {
+  width: 80px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 16px;
+  text-align: center;
+}
+
+.veg-input-field:focus {
+  border-color: var(--accent-green);
+  outline: none;
+}
+
+.veg-input-unit {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.veg-record-btn {
+  margin-left: auto;
+  white-space: nowrap;
+}

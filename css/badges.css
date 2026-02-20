@@ -1,0 +1,55 @@
+/* badges.css - Badge Grid & Badge States */
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.badge:active {
+  transform: scale(var(--scale-tap));
+  background: var(--bg-card-hover);
+}
+
+.badge-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: var(--bg-secondary);
+  transition: all 0.3s ease;
+}
+
+.badge-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.badge.locked .badge-icon {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.badge.unlocked .badge-icon {
+  box-shadow: 0 0 12px var(--accent-green), 0 0 4px var(--accent-green);
+}
+
+.badge.new .badge-icon {
+  animation: glow 2s ease-in-out infinite;
+}

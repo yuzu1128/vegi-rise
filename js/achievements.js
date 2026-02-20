@@ -169,7 +169,7 @@ export function checkNewAchievements(gameState) {
           newlyUnlocked.push(achievement);
         }
       } catch (e) {
-        // skip if check fails
+        console.warn('Achievement check failed:', achievement.id, e);
       }
     }
   }

@@ -1,13 +1,14 @@
 // home.js - Home page for VegiRise
 
 import { DB } from './db.js';
-import { getToday } from './utils.js';
+import { getToday, formatTime, formatTimeWithSeconds } from './utils.js';
 import { Gamification } from './gamification.js';
 import { Sound } from './sound.js';
 import { processRecord } from './game-engine.js';
 import { showToast } from './ui.js';
 import { refreshState, rerender } from './app.js';
 import { iconImg } from './icon-map.js';
+import { renderGoalRow } from './templates.js';
 
 export function renderHome(state) {
   const gs = state.gameState || {};
@@ -16,8 +17,7 @@ export function renderHome(state) {
   const vegGoals = settings.vegetableGoals || { minimum: 350, standard: 500, target: 800 };
 
   const now = new Date();
-  const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-  const secStr = String(now.getSeconds()).padStart(2, '0');
+  const { time: timeStr, seconds: secStr } = formatTimeWithSeconds(now);
 
   return `
     <!-- Streak & Level Header -->
@@ -119,6 +119,7 @@ export function initHome(state) {
   const recordBtn = document.getElementById('veg-record-btn');
   const wakeupBtn = document.getElementById('wakeup-record-btn');
 
+  const presetBtns = document.querySelectorAll('.preset-btn');
   const sliderMax = parseInt(slider.max);
 
   // Update slider track progress
@@ -140,13 +141,13 @@ export function initHome(state) {
     }
     updateSliderTrack();
     // Update active preset
-    document.querySelectorAll('.preset-btn').forEach(btn => {
+    presetBtns.forEach(btn => {
       btn.classList.toggle('active', parseInt(btn.dataset.grams) === v);
     });
   }
 
   // Preset buttons
-  document.querySelectorAll('.preset-btn').forEach(btn => {
+  presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       Sound.click();
       setGrams(parseInt(btn.dataset.grams));
@@ -179,7 +180,7 @@ export function initHome(state) {
     } else {
       listEl.innerHTML = records.map(r => {
         const d = new Date(r.timestamp);
-        const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        const timeStr = formatTime(d);
         return `
           <div class="record-item">
             <span>${timeStr}  ${r.grams}g</span>
@@ -199,51 +200,38 @@ export function initHome(state) {
 
     // Goal indicators
     const goalsEl = document.getElementById('goal-indicators');
-    goalsEl.innerHTML = `
-      <div class="goal-row">
-        <span class="goal-label" style="color:${total >= vegGoals.minimum ? 'var(--accent-orange)' : 'var(--text-muted)'};">
-          ${total >= vegGoals.minimum ? '✓' : '○'} 最低
-        </span>
-        <div class="goal-bar"><div class="goal-bar-fill minimum" style="width:${Math.min(100, (total / vegGoals.minimum) * 100)}%"></div></div>
-        <span class="goal-value">${vegGoals.minimum}g</span>
-      </div>
-      <div class="goal-row">
-        <span class="goal-label" style="color:${total >= vegGoals.standard ? 'var(--accent-blue)' : 'var(--text-muted)'};">
-          ${total >= vegGoals.standard ? '✓' : '○'} 標準
-        </span>
-        <div class="goal-bar"><div class="goal-bar-fill standard" style="width:${Math.min(100, (total / vegGoals.standard) * 100)}%"></div></div>
-        <span class="goal-value">${vegGoals.standard}g</span>
-      </div>
-      <div class="goal-row">
-        <span class="goal-label" style="color:${total >= vegGoals.target ? 'var(--accent-green)' : 'var(--text-muted)'};">
-          ${total >= vegGoals.target ? '✓' : '○'} 目標
-        </span>
-        <div class="goal-bar"><div class="goal-bar-fill target" style="width:${Math.min(100, (total / vegGoals.target) * 100)}%"></div></div>
-        <span class="goal-value">${vegGoals.target}g</span>
-      </div>
-    `;
+    goalsEl.innerHTML =
+      renderGoalRow({ label: '最低', total, goalValue: vegGoals.minimum, cssClass: 'minimum', colorVar: 'var(--accent-orange)' }) +
+      renderGoalRow({ label: '標準', total, goalValue: vegGoals.standard, cssClass: 'standard', colorVar: 'var(--accent-blue)' }) +
+      renderGoalRow({ label: '目標', total, goalValue: vegGoals.target, cssClass: 'target', colorVar: 'var(--accent-green)' });
 
     // Delete buttons
     document.querySelectorAll('.veg-delete-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const id = Number(btn.dataset.id);
+        if (btn.disabled) return;
+        btn.disabled = true;
+        try {
+          const id = Number(btn.dataset.id);
 
-        // Get the record's grams before deleting
-        const record = await DB.getVegetableById(id);
+          // Get the record's grams before deleting
+          const record = await DB.getVegetableById(id);
 
-        await DB.deleteVegetable(id);
+          await DB.deleteVegetable(id);
 
-        // Subtract deleted amount from gameState
-        if (record) {
-          const gameState = await DB.getGameState();
-          gameState.totalVegetableGrams = Math.max(0, gameState.totalVegetableGrams - record.grams);
-          gameState.totalVegetableRecords = Math.max(0, gameState.totalVegetableRecords - 1);
-          await DB.saveGameState(gameState);
+          // Subtract deleted amount from gameState
+          if (record) {
+            const gameState = await DB.getGameState();
+            gameState.totalVegetableGrams = Math.max(0, gameState.totalVegetableGrams - record.grams);
+            gameState.totalVegetableRecords = Math.max(0, gameState.totalVegetableRecords - 1);
+            await DB.saveGameState(gameState);
+          }
+
+          showToast('記録を削除しました', 'info');
+          await refreshState();
+          loadTodayData();
+        } finally {
+          btn.disabled = false;
         }
-
-        showToast('記録を削除しました', 'info');
-        await refreshState();
-        loadTodayData();
       });
     });
 
@@ -298,7 +286,7 @@ export function initHome(state) {
     wakeupBtn.disabled = true;
     try {
       const now = new Date();
-      const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+      const time = formatTime(now);
       const today = getToday();
       const settings = await DB.getSettings();
       const { score, diffMinutes } = Gamification.calculateWakeupScore(time, settings.wakeupGoalTime);
@@ -321,10 +309,8 @@ export function initHome(state) {
     const el = document.getElementById('current-time');
     if (!el) return;
     const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    el.innerHTML = `${h}:${m}<span style="font-size:24px;opacity:0.5;">:${s}</span>`;
+    const { time, seconds } = formatTimeWithSeconds(now);
+    el.innerHTML = `${time}<span class="time-seconds">:${seconds}</span>`;
   }, 1000);
 
   // Return cleanup function

@@ -4,11 +4,7 @@
  * getToday() - 今日の日付を'YYYY-MM-DD'形式で返す
  */
 export function getToday() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  return formatDate(new Date());
 }
 
 /**
@@ -41,4 +37,21 @@ export function debounce(fn, ms = 300) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);
   };
+}
+
+export function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function formatTime(date) {
+  return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+}
+
+export function formatTimeWithSeconds(date) {
+  const time = formatTime(date);
+  const sec = String(date.getSeconds()).padStart(2, '0');
+  return { time, seconds: sec };
 }

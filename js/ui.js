@@ -18,30 +18,65 @@ export function showToast(message, type = 'info', duration = 3000) {
 
 // --- Modal ---
 let _modalBackdropHandler = null;
+let _previouslyFocused = null;
+let _escapeHandler = null;
 
 export function showModal(html) {
   const overlay = document.getElementById('modal-overlay');
   const content = document.getElementById('modal-content');
+
+  _previouslyFocused = document.activeElement;
+
   content.innerHTML = html;
   overlay.classList.remove('hidden');
 
+  // Set aria-label from h2
+  const heading = content.querySelector('h2');
+  if (heading) {
+    overlay.setAttribute('aria-label', heading.textContent);
+  }
+
+  // Focus first focusable element
+  const focusable = content.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (focusable) {
+    focusable.focus();
+  }
+
+  // Backdrop click
   if (_modalBackdropHandler) {
     overlay.removeEventListener('click', _modalBackdropHandler);
   }
   _modalBackdropHandler = (e) => {
-    if (e.target === overlay) {
-      hideModal();
-    }
+    if (e.target === overlay) hideModal();
   };
   overlay.addEventListener('click', _modalBackdropHandler);
+
+  // Escape key
+  if (_escapeHandler) {
+    document.removeEventListener('keydown', _escapeHandler);
+  }
+  _escapeHandler = (e) => {
+    if (e.key === 'Escape') hideModal();
+  };
+  document.addEventListener('keydown', _escapeHandler);
 }
 
 export function hideModal() {
   const overlay = document.getElementById('modal-overlay');
   overlay.classList.add('hidden');
+  overlay.removeAttribute('aria-label');
+
   if (_modalBackdropHandler) {
     overlay.removeEventListener('click', _modalBackdropHandler);
     _modalBackdropHandler = null;
+  }
+  if (_escapeHandler) {
+    document.removeEventListener('keydown', _escapeHandler);
+    _escapeHandler = null;
+  }
+  if (_previouslyFocused) {
+    _previouslyFocused.focus();
+    _previouslyFocused = null;
   }
 }
 
@@ -62,19 +97,6 @@ export function showXPGain(amount) {
     z-index: 400;
     animation: xpFloat 1.5s ease forwards;
   `;
-
-  if (!document.getElementById('xp-float-style')) {
-    const style = document.createElement('style');
-    style.id = 'xp-float-style';
-    style.textContent = `
-      @keyframes xpFloat {
-        0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
-        30% { opacity: 1; transform: translate(-50%, -60%) scale(1.2); }
-        100% { opacity: 0; transform: translate(-50%, -120%) scale(0.8); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
 
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1500);

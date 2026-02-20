@@ -1,0 +1,37 @@
+/* modal.css - Modal Overlay & Content */
+
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+#modal-overlay.hidden {
+  display: none;
+}
+
+#modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 90%;
+  width: 360px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+#modal-content h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}

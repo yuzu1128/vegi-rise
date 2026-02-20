@@ -5,10 +5,13 @@ import { ACHIEVEMENTS, ACHIEVEMENT_CATEGORIES } from './achievements.js';
 import { formatGrams } from './utils.js';
 import { showModal, hideModal } from './ui.js';
 import { iconImg } from './icon-map.js';
+import { renderBadgeHTML } from './templates.js';
 
 let activeCategory = 'all';
 
 export function renderAchievements(state) {
+  activeCategory = 'all';
+
   const gs = state.gameState || {};
   const levelInfo = Gamification.calculateLevel(gs.xp || 0);
   const unlocked = gs.unlockedAchievements || [];
@@ -30,16 +33,7 @@ export function renderAchievements(state) {
     : ACHIEVEMENTS.filter(a => a.category === activeCategory);
 
   // Build badge grid
-  const badges = filtered.map(a => {
-    const isUnlocked = unlocked.includes(a.id);
-    const cls = isUnlocked ? 'unlocked' : 'locked';
-    return `
-      <div class="badge ${cls}" data-id="${a.id}">
-        <div class="badge-icon">${iconImg(isUnlocked ? a.icon : '🔒', 'icon-badge')}</div>
-        <div class="badge-label">${isUnlocked ? a.name : '???'}</div>
-      </div>
-    `;
-  }).join('');
+  const badges = renderBadgeHTML(filtered, unlocked);
 
   return `
     <div class="page-header">
@@ -113,16 +107,7 @@ export function initAchievements(state) {
         ? ACHIEVEMENTS
         : ACHIEVEMENTS.filter(a => a.category === activeCategory);
 
-      const badges = filtered.map(a => {
-        const isUnlocked = unlocked.includes(a.id);
-        const cls = isUnlocked ? 'unlocked' : 'locked';
-        return `
-          <div class="badge ${cls}" data-id="${a.id}">
-            <div class="badge-icon">${iconImg(isUnlocked ? a.icon : '🔒', 'icon-badge')}</div>
-            <div class="badge-label">${isUnlocked ? a.name : '???'}</div>
-          </div>
-        `;
-      }).join('');
+      const badges = renderBadgeHTML(filtered, unlocked);
 
       const grid = document.getElementById('badge-grid');
       grid.innerHTML = badges;
@@ -151,46 +136,22 @@ function showAchievementDetail(id, state) {
   const unlocked = (state.gameState?.unlockedAchievements || []).includes(id);
   const category = ACHIEVEMENT_CATEGORIES[achievement.category] || {};
 
-  let html;
-  if (unlocked) {
-    html = `
-      <div class="modal-center">
-        <div class="badge-detail-icon">${iconImg(achievement.icon, 'icon-badge-detail')}</div>
-        <h2 style="margin-bottom:8px;">${achievement.name}</h2>
-        <div class="badge-detail-desc">
-          ${achievement.description}
-        </div>
-        <div class="badge-detail-cat">
-          ${category.icon ? iconImg(category.icon, 'icon-cat-btn', '16') : ''} ${category.name || ''}
-        </div>
-        <div class="status-badge is-unlocked">
-          獲得済み
-        </div>
-        <div class="modal-action">
-          <button class="btn-secondary btn-full" id="modal-close-achieve">閉じる</button>
-        </div>
+  const html = `
+    <div class="modal-center">
+      <div class="badge-detail-icon${unlocked ? '' : ' is-locked'}">${iconImg(unlocked ? achievement.icon : '🔒', 'icon-badge-detail')}</div>
+      <h2 style="margin-bottom:8px;">${unlocked ? achievement.name : '???'}</h2>
+      <div class="badge-detail-desc">${achievement.description}</div>
+      <div class="badge-detail-cat">
+        ${category.icon ? iconImg(category.icon, 'icon-cat-btn', '16') : ''} ${category.name || ''}
       </div>
-    `;
-  } else {
-    html = `
-      <div class="modal-center">
-        <div class="badge-detail-icon is-locked">${iconImg('🔒', 'icon-badge-detail')}</div>
-        <h2 style="margin-bottom:8px;">???</h2>
-        <div class="badge-detail-desc">
-          ${achievement.description}
-        </div>
-        <div class="badge-detail-cat">
-          ${category.icon ? iconImg(category.icon, 'icon-cat-btn', '16') : ''} ${category.name || ''}
-        </div>
-        <div class="status-badge is-locked">
-          未獲得
-        </div>
-        <div class="modal-action">
-          <button class="btn-secondary btn-full" id="modal-close-achieve">閉じる</button>
-        </div>
+      <div class="status-badge ${unlocked ? 'is-unlocked' : 'is-locked'}">
+        ${unlocked ? '獲得済み' : '未獲得'}
       </div>
-    `;
-  }
+      <div class="modal-action">
+        <button class="btn-secondary btn-full" id="modal-close-achieve">閉じる</button>
+      </div>
+    </div>
+  `;
 
   showModal(html);
   document.getElementById('modal-close-achieve').addEventListener('click', hideModal);

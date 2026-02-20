@@ -1,0 +1,54 @@
+/* goals.css - Goal Indicators & Progress Bars */
+
+.goal-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-label {
+  font-size: 12px;
+  min-width: 40px;
+  color: var(--text-secondary);
+}
+
+.goal-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.goal-bar-fill.minimum {
+  background: var(--accent-orange);
+}
+
+.goal-bar-fill.standard {
+  background: var(--accent-blue);
+}
+
+.goal-bar-fill.target {
+  background: var(--accent-green);
+}
+
+.goal-value {
+  font-size: 12px;
+  min-width: 48px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-secondary);
+}

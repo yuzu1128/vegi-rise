@@ -1,18 +1,15 @@
 // history.js - History page (calendar) for VegiRise
 
 import { DB } from './db.js';
-import { getToday, formatGrams, minutesToTimeStr } from './utils.js';
+import { getToday, formatGrams, minutesToTimeStr, formatTime } from './utils.js';
 import { Gamification } from './gamification.js';
 import { showModal, hideModal } from './ui.js';
 import { iconImg } from './icon-map.js';
 
-let currentYear;
-let currentMonth;
-
 export function renderHistory(state) {
   const now = new Date();
-  currentYear = now.getFullYear();
-  currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
   return `
     <div class="page-header">
@@ -40,51 +37,50 @@ export function renderHistory(state) {
 }
 
 export function initHistory(state) {
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth() + 1;
+
   const prevBtn = document.getElementById('cal-prev');
   const nextBtn = document.getElementById('cal-next');
 
+  document.getElementById('cal-month-label').textContent = `${currentYear}年${currentMonth}月`;
+
   prevBtn.addEventListener('click', () => {
     currentMonth--;
-    if (currentMonth < 1) {
-      currentMonth = 12;
-      currentYear--;
-    }
-    loadCalendar(state);
+    if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+    loadCalendar(currentYear, currentMonth, state);
   });
 
   nextBtn.addEventListener('click', () => {
     currentMonth++;
-    if (currentMonth > 12) {
-      currentMonth = 1;
-      currentYear++;
-    }
-    loadCalendar(state);
+    if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+    loadCalendar(currentYear, currentMonth, state);
   });
 
-  loadCalendar(state);
+  loadCalendar(currentYear, currentMonth, state);
 }
 
-async function loadCalendar(state) {
+async function loadCalendar(year, month, state) {
   const label = document.getElementById('cal-month-label');
   const grid = document.getElementById('cal-grid');
   const summaryEl = document.getElementById('month-summary');
 
-  label.textContent = `${currentYear}年${currentMonth}月`;
+  label.textContent = `${year}年${month}月`;
 
-  const data = await DB.getMonthData(currentYear, currentMonth);
+  const data = await DB.getMonthData(year, month);
   const settings = await DB.getSettings();
   const vegGoals = settings.vegetableGoals;
   const today = getToday();
 
   // Build calendar grid
-  const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay(); // 0=Sun
-  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+  const firstDay = new Date(year, month - 1, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month, 0).getDate();
 
-  let html = '';
+  const cells = [];
 
   // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
-    html += '<button class="cal-cell empty"></button>';
+    cells.push('<button class="cal-cell empty"></button>');
   }
 
   // Summary accumulators
@@ -95,7 +91,7 @@ async function loadCalendar(state) {
   let wakeupCount = 0;
 
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const dayData = data.get(dateStr) || { vegTotal: 0, wakeup: null };
 
     // Calculate score for coloring (0-4)
@@ -134,10 +130,10 @@ async function loadCalendar(state) {
       }
     }
 
-    html += `<button class="cal-cell${todayClass}"${scoreAttr} data-date="${dateStr}">${day}</button>`;
+    cells.push(`<button class="cal-cell${todayClass}"${scoreAttr} data-date="${dateStr}">${day}</button>`);
   }
 
-  grid.innerHTML = html;
+  grid.innerHTML = cells.join('');
 
   // Attach click handlers to day cells
   grid.querySelectorAll('.cal-cell:not(.empty)').forEach(cell => {
@@ -214,7 +210,7 @@ async function showDayDetail(dateStr, state) {
   } else {
     html += records.map(r => {
       const t = new Date(r.timestamp);
-      const timeStr = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+      const timeStr = formatTime(t);
       return `<div class="detail-row">
         <span>${timeStr}</span><span>${r.grams}g</span>
       </div>`;

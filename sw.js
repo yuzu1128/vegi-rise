@@ -1,20 +1,13 @@
-const CACHE_NAME = 'vegi-rise-v4';
+const CACHE_NAME = 'vegi-rise-v5';
+
+const CSS_FILES = ['base','navigation','cards','buttons','slider','calendar','badges','modal','toast','gamification','wakeup','goals','layout','forms','animations','components'].map(f => `css/${f}.css`);
+const JS_FILES = ['app','db','utils','ui','game-engine','sound','gamification','achievements','home','history','achieve-page','settings','icon-map','constants','templates','store'].map(f => `js/${f}.js`);
+
 const ASSETS = [
   'index.html',
-  'css/style.css',
-  'js/app.js',
-  'js/db.js',
-  'js/utils.js',
-  'js/ui.js',
-  'js/game-engine.js',
-  'js/sound.js',
-  'js/gamification.js',
-  'js/achievements.js',
-  'js/home.js',
-  'js/history.js',
-  'js/achieve-page.js',
-  'js/settings.js',
-  'js/icon-map.js',
+  'css/main.css',
+  ...CSS_FILES,
+  ...JS_FILES,
   'manifest.json',
   // App icons
   'images/app/icon-192.png',
