@@ -20,9 +20,13 @@
   --accent-yellow: #fbbf24;
   --gradient-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --border-color: #2a2a3e;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(26, 26, 46, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.06);
   --radius: 12px;
   --radius-sm: 8px;
+  --radius-lg: 16px;
   --nav-height: 65px;
 }
 
@@ -64,8 +68,10 @@ body {
   left: 0;
   right: 0;
   height: var(--nav-height);
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--glass-border);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -110,15 +116,15 @@ body {
 /* ---- Cards ---- */
 .card {
   background: var(--bg-card);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 16px;
   margin-bottom: 12px;
   box-shadow: var(--shadow);
-  transition: background 0.2s ease;
 }
 
-.card:hover {
-  background: var(--bg-card-hover);
+.card-compact {
+  padding: 12px 16px;
 }
 
 .card-title {
@@ -348,6 +354,7 @@ body {
 
 /* ---- Calendar ---- */
 .calendar {
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -406,10 +413,11 @@ body {
   justify-content: center;
   border-radius: var(--radius-sm);
   font-size: 12px;
+  font-weight: 500;
   color: var(--text-muted);
   background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.15s ease;
   border: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -466,6 +474,14 @@ body {
   gap: 6px;
   padding: 12px 4px;
   text-align: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.badge:active {
+  transform: scale(0.95);
+  background: var(--bg-card-hover);
 }
 
 .badge-icon {
@@ -503,7 +519,9 @@ body {
 #modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,12 +535,14 @@ body {
 
 #modal-content {
   background: var(--bg-card);
-  border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
   padding: 24px;
   max-width: 90%;
   width: 360px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.3s ease;
 }
 
@@ -548,11 +568,14 @@ body {
 }
 
 .toast {
-  background: var(--bg-card);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
   border-left: 4px solid var(--accent-green);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
   animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
   pointer-events: auto;
   font-size: 14px;
@@ -638,7 +661,7 @@ body {
 }
 
 .stat-card {
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   border-radius: var(--radius);
   padding: 12px;
   text-align: center;
@@ -780,11 +803,12 @@ body {
 
 /* ---- Page Header ---- */
 .page-header {
-  background: var(--gradient-header);
-  border-radius: var(--radius);
-  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6B5CE7 100%);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
   margin-bottom: 16px;
   text-align: center;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
 }
 
 .page-header h1 {
@@ -1032,6 +1056,245 @@ body {
   width: 24px;
   height: 24px;
   display: block;
+}
+
+/* ---- List Rows (key-value) ---- */
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.list-row-label {
+  color: var(--text-secondary);
+}
+
+.list-row-value {
+  font-weight: 600;
+}
+
+/* ---- Stats Overview (horizontal) ---- */
+.stats-overview {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.stats-item-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stats-item-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ---- Category Filter ---- */
+.cat-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---- Record Items ---- */
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-delete {
+  background: none;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.record-delete:active {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+/* ---- Section Subtitle ---- */
+.section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ---- Score Display ---- */
+.score-display {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.score-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* ---- Detail Row ---- */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.detail-row-value {
+  font-weight: 600;
+}
+
+/* ---- Status Badge ---- */
+.status-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.is-unlocked {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--accent-green);
+}
+
+.status-badge.is-locked {
+  background: rgba(160, 160, 176, 0.15);
+  color: var(--text-muted);
+}
+
+/* ---- Progress Text ---- */
+.progress-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ---- Empty State ---- */
+.empty-state {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ---- Modal Center Content ---- */
+.modal-center {
+  text-align: center;
+}
+
+/* ---- Badge Detail ---- */
+.badge-detail-icon {
+  margin-bottom: 12px;
+}
+
+.badge-detail-icon.is-locked {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.badge-detail-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.badge-detail-cat {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* ---- Records Section ---- */
+.records-section {
+  margin-top: 16px;
+}
+
+.records-header {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ---- Wakeup Meta ---- */
+.wakeup-meta {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.wakeup-status-area {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ---- Veg Total ---- */
+.veg-total {
+  font-weight: 700;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--accent-green);
+}
+
+/* ---- Wakeup Summary ---- */
+.wakeup-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.wakeup-summary-label {
+  color: var(--text-secondary);
+}
+
+.wakeup-summary-value {
+  font-weight: 600;
+}
+
+/* ---- Achievement Count ---- */
+.achievement-count {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ---- Modal Action ---- */
+.modal-action {
+  margin-top: 20px;
+}
+
+/* ---- Veg Progress ---- */
+.veg-progress {
+  margin-top: 12px;
 }
 
 /* ---- Scrollbar ---- */

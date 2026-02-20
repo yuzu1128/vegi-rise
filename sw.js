@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vegi-rise-v3';
+const CACHE_NAME = 'vegi-rise-v4';
 const ASSETS = [
   'index.html',
   'css/style.css',

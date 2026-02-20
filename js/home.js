@@ -21,7 +21,7 @@ export function renderHome(state) {
 
   return `
     <!-- Streak & Level Header -->
-    <div class="card" style="padding:12px 16px;">
+    <div class="card card-compact">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div class="streak">
           <span class="streak-icon">${iconImg('🔥', 'icon-section', '28')}</span>
@@ -69,25 +69,25 @@ export function renderHome(state) {
       </div>
 
       <!-- Goal Indicators -->
-      <div class="goal-indicator" style="margin-top:16px;" id="goal-indicators">
+      <div class="goal-indicator" id="goal-indicators">
         <!-- Filled by initHome -->
       </div>
 
       <!-- Progress Bar -->
-      <div style="margin-top:12px;">
+      <div class="veg-progress">
         <div class="xp-bar" style="height:10px;">
           <div class="xp-bar-fill" id="veg-progress-fill" style="width:0%;background:linear-gradient(90deg,var(--accent-orange),var(--accent-green));"></div>
         </div>
-        <div style="text-align:center;font-size:12px;color:var(--text-secondary);margin-top:4px;" id="veg-progress-text">0 / ${vegGoals.target}g</div>
+        <div class="progress-text" id="veg-progress-text">0 / ${vegGoals.target}g</div>
       </div>
 
       <!-- Today's Records -->
-      <div style="margin-top:16px;">
-        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">今日の記録:</div>
-        <div id="veg-records-list" style="font-size:13px;">
+      <div class="records-section">
+        <div class="records-header">今日の記録:</div>
+        <div id="veg-records-list">
           <!-- Filled by initHome -->
         </div>
-        <div id="veg-total" style="font-weight:700;margin-top:8px;font-size:14px;color:var(--accent-green);">
+        <div id="veg-total" class="veg-total">
           合計: 0g
         </div>
       </div>
@@ -103,11 +103,11 @@ export function renderHome(state) {
 
       <button class="wakeup-btn" id="wakeup-record-btn">この時間で起床を記録</button>
 
-      <div style="margin-top:12px;text-align:center;font-size:13px;color:var(--text-secondary);">
+      <div class="wakeup-meta">
         目標: ${settings.wakeupGoalTime || '06:00'}
       </div>
 
-      <div id="wakeup-status" style="margin-top:8px;text-align:center;font-size:14px;"></div>
+      <div id="wakeup-status" class="wakeup-status-area"></div>
     </div>
   `;
 }
@@ -175,15 +175,15 @@ export function initHome(state) {
     // Records list
     const listEl = document.getElementById('veg-records-list');
     if (records.length === 0) {
-      listEl.innerHTML = '<div style="color:var(--text-muted);font-style:italic;">まだ記録がありません</div>';
+      listEl.innerHTML = '<div class="empty-state">まだ記録がありません</div>';
     } else {
       listEl.innerHTML = records.map(r => {
         const d = new Date(r.timestamp);
         const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
         return `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-color);">
+          <div class="record-item">
             <span>${timeStr}  ${r.grams}g</span>
-            <button class="veg-delete-btn" data-id="${r.id}" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:4px 8px;">×</button>
+            <button class="veg-delete-btn record-delete" data-id="${r.id}">×</button>
           </div>
         `;
       }).join('');

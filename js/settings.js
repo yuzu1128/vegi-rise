@@ -61,26 +61,26 @@ export function renderSettings(state) {
     <!-- Stats -->
     <div class="card">
       <div class="card-title">${iconImg('📊', 'icon-section-title')} 統計</div>
-      <div style="font-size:14px;">
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
-          <span style="color:var(--text-secondary);">総記録日数</span>
-          <span style="font-weight:600;">${gs.totalRecordDays || 0}日</span>
+      <div>
+        <div class="list-row">
+          <span class="list-row-label">総記録日数</span>
+          <span class="list-row-value">${gs.totalRecordDays || 0}日</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
-          <span style="color:var(--text-secondary);">野菜累計</span>
-          <span style="font-weight:600;">${formatGrams(gs.totalVegetableGrams || 0)}</span>
+        <div class="list-row">
+          <span class="list-row-label">野菜累計</span>
+          <span class="list-row-value">${formatGrams(gs.totalVegetableGrams || 0)}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
-          <span style="color:var(--text-secondary);">最高連続</span>
-          <span style="font-weight:600;">${gs.longestStreak || 0}日</span>
+        <div class="list-row">
+          <span class="list-row-label">最高連続</span>
+          <span class="list-row-value">${gs.longestStreak || 0}日</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
-          <span style="color:var(--text-secondary);">レベル</span>
-          <span style="font-weight:600;">Lv.${gs.level || 1}</span>
+        <div class="list-row">
+          <span class="list-row-label">レベル</span>
+          <span class="list-row-value">Lv.${gs.level || 1}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;">
-          <span style="color:var(--text-secondary);">総XP</span>
-          <span style="font-weight:600;">${(gs.xp || 0).toLocaleString()}</span>
+        <div class="list-row">
+          <span class="list-row-label">総XP</span>
+          <span class="list-row-value">${(gs.xp || 0).toLocaleString()}</span>
         </div>
       </div>
     </div>

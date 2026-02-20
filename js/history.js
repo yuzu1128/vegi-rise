@@ -173,14 +173,14 @@ async function loadCalendar(state) {
     ${wakeupCount > 0 ? `
       <div class="divider"></div>
       <div class="card-title">${iconImg('🌅', 'icon-section-title')} 起床記録</div>
-      <div style="display:flex;justify-content:space-between;font-size:14px;">
+      <div class="wakeup-summary">
         <div>
-          <span style="color:var(--text-secondary);">平均起床:</span>
-          <span style="font-weight:600;">${avgWakeup}</span>
+          <span class="wakeup-summary-label">平均起床:</span>
+          <span class="wakeup-summary-value">${avgWakeup}</span>
         </div>
         <div>
-          <span style="color:var(--text-secondary);">パーフェクト率:</span>
-          <span style="font-weight:600;color:${perfectRate >= 70 ? 'var(--accent-green)' : 'var(--text-primary)'};">${perfectRate}%</span>
+          <span class="wakeup-summary-label">パーフェクト率:</span>
+          <span class="wakeup-summary-value" style="color:${perfectRate >= 70 ? 'var(--accent-green)' : 'var(--text-primary)'};">${perfectRate}%</span>
         </div>
       </div>
     ` : ''}
@@ -201,50 +201,50 @@ async function showDayDetail(dateStr, state) {
 
   let html = `
     <h2>${dateLabel}</h2>
-    <div style="text-align:center;margin-bottom:16px;">
-      <span style="font-size:14px;color:var(--text-secondary);">総合スコア: </span>
-      <span style="font-size:24px;font-weight:700;color:${scoreColor(dayScore)};">${dayScore}</span>
+    <div class="score-display">
+      <span class="score-label">総合スコア: </span>
+      <span class="score-value" style="color:${scoreColor(dayScore)};">${dayScore}</span>
     </div>
     <div class="divider"></div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">${iconImg('🥦', 'icon-section-title')} 野菜記録</div>
+    <div class="section-subtitle">${iconImg('🥦', 'icon-section-title')} 野菜記録</div>
   `;
 
   if (records.length === 0) {
-    html += '<div style="color:var(--text-muted);font-size:13px;font-style:italic;">記録なし</div>';
+    html += '<div class="empty-state">記録なし</div>';
   } else {
     html += records.map(r => {
       const t = new Date(r.timestamp);
       const timeStr = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
-      return `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border-color);">
+      return `<div class="detail-row">
         <span>${timeStr}</span><span>${r.grams}g</span>
       </div>`;
     }).join('');
-    html += `<div style="text-align:right;font-weight:700;margin-top:6px;color:var(--accent-green);">合計: ${total}g</div>`;
+    html += `<div class="veg-total" style="text-align:right;">合計: ${total}g</div>`;
   }
 
   html += '<div class="divider"></div>';
-  html += `<div style="font-size:14px;font-weight:600;margin-bottom:8px;">${iconImg('⏰', 'icon-section-title')} 起床記録</div>`;
+  html += `<div class="section-subtitle">${iconImg('⏰', 'icon-section-title')} 起床記録</div>`;
 
   if (wakeup) {
     html += `
-      <div style="font-size:13px;">
-        <div style="display:flex;justify-content:space-between;padding:4px 0;">
-          <span>起床時間</span><span style="font-weight:600;">${wakeup.time}</span>
+      <div>
+        <div class="detail-row">
+          <span>起床時間</span><span class="detail-row-value">${wakeup.time}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;">
+        <div class="detail-row">
           <span>目標</span><span>${wakeup.goalTime}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;">
-          <span>スコア</span><span style="font-weight:600;color:${scoreColor(wakeup.score)};">${wakeup.score}</span>
+        <div class="detail-row">
+          <span>スコア</span><span class="detail-row-value" style="color:${scoreColor(wakeup.score)};">${wakeup.score}</span>
         </div>
       </div>
     `;
   } else {
-    html += '<div style="color:var(--text-muted);font-size:13px;font-style:italic;">記録なし</div>';
+    html += '<div class="empty-state">記録なし</div>';
   }
 
   html += `
-    <div style="margin-top:20px;">
+    <div class="modal-action">
       <button class="btn-secondary btn-full" id="modal-close-detail">閉じる</button>
     </div>
   `;
