@@ -209,6 +209,71 @@ body {
   width: 100%;
 }
 
+/* ---- Preset Buttons ---- */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preset-btn {
+  padding: 10px 4px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.preset-btn:active {
+  transform: scale(0.93);
+}
+
+.preset-btn.active {
+  background: rgba(74, 222, 128, 0.15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+/* ---- Veg Input Row ---- */
+.veg-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.veg-input-field {
+  width: 80px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 16px;
+  text-align: center;
+}
+
+.veg-input-field:focus {
+  border-color: var(--accent-green);
+  outline: none;
+}
+
+.veg-input-unit {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.veg-record-btn {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
 /* ---- Slider ---- */
 .slider-container {
   padding: 8px 0;

@@ -44,19 +44,28 @@ export function renderHome(state) {
     <div class="card">
       <div class="card-title">${iconImg('🥦', 'icon-section-title')} 今日の野菜</div>
 
+      <!-- Preset Buttons -->
+      <div class="preset-grid" id="preset-buttons">
+        <button class="preset-btn" data-grams="50">50g</button>
+        <button class="preset-btn" data-grams="100">100g</button>
+        <button class="preset-btn active" data-grams="200">200g</button>
+        <button class="preset-btn" data-grams="350">350g</button>
+        <button class="preset-btn" data-grams="500">500g</button>
+        <button class="preset-btn" data-grams="800">800g</button>
+      </div>
+
       <div class="slider-container">
         <label>
           <span>摂取量</span>
-          <span class="slider-value" id="veg-slider-label">100g</span>
+          <span class="slider-value" id="veg-slider-label">200g</span>
         </label>
-        <input type="range" id="veg-slider" min="0" max="500" step="10" value="100">
+        <input type="range" id="veg-slider" min="0" max="${vegGoals.target}" step="10" value="200">
       </div>
 
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-        <input type="number" id="veg-input" min="0" max="9999" step="1" value="100"
-          style="width:80px;padding:10px 12px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-size:16px;text-align:center;">
-        <span style="color:var(--text-secondary);font-size:14px;">g</span>
-        <button class="btn-primary" id="veg-record-btn" style="margin-left:auto;">記録する</button>
+      <div class="veg-input-row">
+        <input type="number" id="veg-input" min="0" max="9999" step="1" value="200" class="veg-input-field">
+        <span class="veg-input-unit">g</span>
+        <button class="btn-primary veg-record-btn" id="veg-record-btn">${iconImg('🥦', 'icon-section-title')} 記録</button>
       </div>
 
       <!-- Goal Indicators -->
@@ -110,27 +119,47 @@ export function initHome(state) {
   const recordBtn = document.getElementById('veg-record-btn');
   const wakeupBtn = document.getElementById('wakeup-record-btn');
 
+  const sliderMax = parseInt(slider.max);
+
   // Update slider track progress
   function updateSliderTrack() {
     const val = slider.value;
-    const pct = (val / slider.max) * 100;
+    const pct = (val / sliderMax) * 100;
     slider.style.setProperty('--progress', pct + '%');
   }
 
+  // Sync all inputs (slider, number, presets)
+  function setGrams(v) {
+    v = Math.max(0, parseInt(v) || 0);
+    input.value = v;
+    sliderLabel.textContent = v + 'g';
+    if (v <= sliderMax) {
+      slider.value = v;
+    } else {
+      slider.value = sliderMax;
+    }
+    updateSliderTrack();
+    // Update active preset
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.grams) === v);
+    });
+  }
+
+  // Preset buttons
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Sound.click();
+      setGrams(parseInt(btn.dataset.grams));
+    });
+  });
+
   // Slider <-> input sync
   slider.addEventListener('input', () => {
-    input.value = slider.value;
-    sliderLabel.textContent = slider.value + 'g';
-    updateSliderTrack();
+    setGrams(slider.value);
   });
 
   input.addEventListener('input', () => {
-    const v = parseInt(input.value) || 0;
-    if (v <= 500) {
-      slider.value = v;
-      updateSliderTrack();
-    }
-    sliderLabel.textContent = (v || 0) + 'g';
+    setGrams(input.value);
   });
 
   updateSliderTrack();
@@ -253,10 +282,7 @@ export function initHome(state) {
       await refreshState();
 
       // Reset input
-      slider.value = 100;
-      input.value = 100;
-      sliderLabel.textContent = '100g';
-      updateSliderTrack();
+      setGrams(200);
 
       showToast(`${grams}gを記録しました!`, 'success');
       loadTodayData();
