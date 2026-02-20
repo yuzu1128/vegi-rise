@@ -59,7 +59,7 @@ export function renderHome(state) {
           <span>摂取量</span>
           <span class="slider-value" id="veg-slider-label">200g</span>
         </label>
-        <input type="range" id="veg-slider" min="0" max="${vegGoals.target}" step="10" value="200">
+        <input type="range" id="veg-slider" min="0" max="1500" step="10" value="200">
       </div>
 
       <div class="veg-input-row">
