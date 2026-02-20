@@ -1,0 +1,23 @@
+{
+  "id": "/index.html",
+  "name": "ベジライズ - 野菜&起床トラッカー",
+  "short_name": "ベジライズ",
+  "description": "毎日の野菜摂取量と起床時間を記録するゲーミフィケーションアプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
