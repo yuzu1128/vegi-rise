@@ -924,6 +924,51 @@ body {
   transform: scale(0.95);
 }
 
+/* ---- Icon Images (replacing emoji) ---- */
+.icon-section-title {
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  margin-right: 4px;
+}
+
+.icon-section {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.icon-badge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.icon-badge-detail,
+.icon-badge-popup {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.icon-cat-btn {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+}
+
+.icon-cat-popup {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+}
+
+.nav-icon img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
 /* ---- Scrollbar ---- */
 ::-webkit-scrollbar {
   width: 4px;

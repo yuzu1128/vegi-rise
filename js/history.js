@@ -4,6 +4,7 @@ import { DB } from './db.js';
 import { getToday, formatGrams, minutesToTimeStr } from './utils.js';
 import { Gamification } from './gamification.js';
 import { showModal, hideModal } from './ui.js';
+import { iconImg } from './icon-map.js';
 
 let currentYear;
 let currentMonth;
@@ -15,7 +16,7 @@ export function renderHistory(state) {
 
   return `
     <div class="page-header">
-      <h1>📅 履歴</h1>
+      <h1>${iconImg('📅', 'icon-section-title')} 履歴</h1>
     </div>
 
     <div class="card">
@@ -154,7 +155,7 @@ async function loadCalendar(state) {
   const perfectRate = wakeupCount > 0 ? Math.round((perfectCount / wakeupCount) * 100) : 0;
 
   summaryEl.innerHTML = `
-    <div class="card-title">📊 月間サマリー</div>
+    <div class="card-title">${iconImg('📊', 'icon-section-title')} 月間サマリー</div>
     <div class="stat-grid">
       <div class="stat-card">
         <div class="stat-value green">${formatGrams(totalGrams)}</div>
@@ -171,7 +172,7 @@ async function loadCalendar(state) {
     </div>
     ${wakeupCount > 0 ? `
       <div class="divider"></div>
-      <div class="card-title">🌅 起床記録</div>
+      <div class="card-title">${iconImg('🌅', 'icon-section-title')} 起床記録</div>
       <div style="display:flex;justify-content:space-between;font-size:14px;">
         <div>
           <span style="color:var(--text-secondary);">平均起床:</span>
@@ -205,7 +206,7 @@ async function showDayDetail(dateStr, state) {
       <span style="font-size:24px;font-weight:700;color:${scoreColor(dayScore)};">${dayScore}</span>
     </div>
     <div class="divider"></div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">🥦 野菜記録</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">${iconImg('🥦', 'icon-section-title')} 野菜記録</div>
   `;
 
   if (records.length === 0) {
@@ -222,7 +223,7 @@ async function showDayDetail(dateStr, state) {
   }
 
   html += '<div class="divider"></div>';
-  html += '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">⏰ 起床記録</div>';
+  html += `<div style="font-size:14px;font-weight:600;margin-bottom:8px;">${iconImg('⏰', 'icon-section-title')} 起床記録</div>`;
 
   if (wakeup) {
     html += `

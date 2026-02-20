@@ -4,6 +4,7 @@ import { Gamification } from './gamification.js';
 import { ACHIEVEMENTS, ACHIEVEMENT_CATEGORIES } from './achievements.js';
 import { formatGrams } from './utils.js';
 import { showModal, hideModal } from './ui.js';
+import { iconImg } from './icon-map.js';
 
 let activeCategory = 'all';
 
@@ -18,7 +19,7 @@ export function renderAchievements(state) {
     <button class="cat-btn${activeCategory === 'all' ? ' active' : ''}" data-cat="all">全部</button>
     ${categories.map(([key, cat]) => `
       <button class="cat-btn${activeCategory === key ? ' active' : ''}" data-cat="${key}">
-        ${cat.icon} ${cat.name}
+        ${iconImg(cat.icon, 'icon-cat-btn', '14')} ${cat.name}
       </button>
     `).join('')}
   `;
@@ -34,7 +35,7 @@ export function renderAchievements(state) {
     const cls = isUnlocked ? 'unlocked' : 'locked';
     return `
       <div class="badge ${cls}" data-id="${a.id}">
-        <div class="badge-icon">${isUnlocked ? a.icon : '🔒'}</div>
+        <div class="badge-icon">${iconImg(isUnlocked ? a.icon : '🔒', 'icon-badge')}</div>
         <div class="badge-label">${isUnlocked ? a.name : '???'}</div>
       </div>
     `;
@@ -42,7 +43,7 @@ export function renderAchievements(state) {
 
   return `
     <div class="page-header">
-      <h1>🏆 実績</h1>
+      <h1>${iconImg('🏆', 'icon-section-title')} 実績</h1>
     </div>
 
     <!-- Level & XP -->
@@ -60,15 +61,15 @@ export function renderAchievements(state) {
     <div class="card" style="padding:12px 16px;">
       <div style="display:flex;justify-content:space-around;text-align:center;">
         <div>
-          <div style="font-size:20px;font-weight:700;color:var(--accent-orange);">🔥 ${gs.currentStreak || 0}日</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent-orange);">${iconImg('🔥', 'icon-section', '20')} ${gs.currentStreak || 0}日</div>
           <div style="font-size:11px;color:var(--text-secondary);">ストリーク</div>
         </div>
         <div>
-          <div style="font-size:20px;font-weight:700;color:var(--accent-blue);">📊 ${gs.totalRecordDays || 0}日</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent-blue);">${iconImg('📊', 'icon-section', '20')} ${gs.totalRecordDays || 0}日</div>
           <div style="font-size:11px;color:var(--text-secondary);">総記録日数</div>
         </div>
         <div>
-          <div style="font-size:20px;font-weight:700;color:var(--accent-green);">🥦 ${formatGrams(gs.totalVegetableGrams || 0)}</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent-green);">${iconImg('🥦', 'icon-section', '20')} ${formatGrams(gs.totalVegetableGrams || 0)}</div>
           <div style="font-size:11px;color:var(--text-secondary);">野菜累計</div>
         </div>
       </div>
@@ -117,7 +118,7 @@ export function initAchievements(state) {
         const cls = isUnlocked ? 'unlocked' : 'locked';
         return `
           <div class="badge ${cls}" data-id="${a.id}">
-            <div class="badge-icon">${isUnlocked ? a.icon : '🔒'}</div>
+            <div class="badge-icon">${iconImg(isUnlocked ? a.icon : '🔒', 'icon-badge')}</div>
             <div class="badge-label">${isUnlocked ? a.name : '???'}</div>
           </div>
         `;
@@ -154,13 +155,13 @@ function showAchievementDetail(id, state) {
   if (unlocked) {
     html = `
       <div style="text-align:center;">
-        <div style="font-size:64px;margin-bottom:12px;">${achievement.icon}</div>
+        <div style="margin-bottom:12px;">${iconImg(achievement.icon, 'icon-badge-detail')}</div>
         <h2 style="margin-bottom:8px;">${achievement.name}</h2>
         <div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
           ${achievement.description}
         </div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">
-          ${category.icon || ''} ${category.name || ''}
+          ${category.icon ? iconImg(category.icon, 'icon-cat-btn', '16') : ''} ${category.name || ''}
         </div>
         <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(74,222,128,0.15);color:var(--accent-green);font-size:13px;font-weight:600;">
           獲得済み
@@ -173,13 +174,13 @@ function showAchievementDetail(id, state) {
   } else {
     html = `
       <div style="text-align:center;">
-        <div style="font-size:64px;margin-bottom:12px;filter:grayscale(1);opacity:0.4;">🔒</div>
+        <div style="margin-bottom:12px;filter:grayscale(1);opacity:0.4;">${iconImg('🔒', 'icon-badge-detail')}</div>
         <h2 style="margin-bottom:8px;">???</h2>
         <div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
           ${achievement.description}
         </div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">
-          ${category.icon || ''} ${category.name || ''}
+          ${category.icon ? iconImg(category.icon, 'icon-cat-btn', '16') : ''} ${category.name || ''}
         </div>
         <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(160,160,176,0.15);color:var(--text-muted);font-size:13px;font-weight:600;">
           未獲得

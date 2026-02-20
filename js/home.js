@@ -7,6 +7,7 @@ import { Sound } from './sound.js';
 import { processRecord } from './game-engine.js';
 import { showToast } from './ui.js';
 import { refreshState, rerender } from './app.js';
+import { iconImg } from './icon-map.js';
 
 export function renderHome(state) {
   const gs = state.gameState || {};
@@ -23,7 +24,7 @@ export function renderHome(state) {
     <div class="card" style="padding:12px 16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div class="streak">
-          <span class="streak-icon">🔥</span>
+          <span class="streak-icon">${iconImg('🔥', 'icon-section', '28')}</span>
           <span>連続 ${gs.currentStreak || 0}日目</span>
         </div>
         <div class="xp-level">Lv.${levelInfo.level}</div>
@@ -41,7 +42,7 @@ export function renderHome(state) {
 
     <!-- Vegetable Section -->
     <div class="card">
-      <div class="card-title">🥦 今日の野菜</div>
+      <div class="card-title">${iconImg('🥦', 'icon-section-title')} 今日の野菜</div>
 
       <div class="slider-container">
         <label>
@@ -85,7 +86,7 @@ export function renderHome(state) {
 
     <!-- Wakeup Section -->
     <div class="card">
-      <div class="card-title">⏰ 起床時間</div>
+      <div class="card-title">${iconImg('⏰', 'icon-section-title')} 起床時間</div>
 
       <div class="wakeup-display">
         <div class="wakeup-time" id="current-time">${timeStr}<span style="font-size:24px;opacity:0.5;">:${secStr}</span></div>

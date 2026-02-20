@@ -5,6 +5,7 @@ import { Sound } from './sound.js';
 import { formatGrams } from './utils.js';
 import { showToast } from './ui.js';
 import { refreshState } from './app.js';
+import { iconImg } from './icon-map.js';
 
 export function renderSettings(state) {
   const settings = state.settings || {};
@@ -13,12 +14,12 @@ export function renderSettings(state) {
 
   return `
     <div class="page-header">
-      <h1>⚙️ 設定</h1>
+      <h1>${iconImg('⚙️', 'icon-section-title')} 設定</h1>
     </div>
 
     <!-- Vegetable Goals -->
     <div class="card">
-      <div class="card-title">🥦 野菜目標</div>
+      <div class="card-title">${iconImg('🥦', 'icon-section-title')} 野菜目標</div>
       <div class="form-group">
         <label>最低目標 (g)</label>
         <input type="number" id="set-veg-min" min="1" max="9999" value="${vegGoals.minimum}">
@@ -35,7 +36,7 @@ export function renderSettings(state) {
 
     <!-- Wakeup Goal -->
     <div class="card">
-      <div class="card-title">⏰ 起床目標</div>
+      <div class="card-title">${iconImg('⏰', 'icon-section-title')} 起床目標</div>
       <div class="form-group">
         <label>目標起床時間</label>
         <input type="time" id="set-wakeup-time" value="${settings.wakeupGoalTime || '06:00'}">
@@ -44,7 +45,7 @@ export function renderSettings(state) {
 
     <!-- Sound -->
     <div class="card">
-      <div class="card-title">🔊 サウンド</div>
+      <div class="card-title">${iconImg('🔊', 'icon-section-title')} サウンド</div>
       <div class="toggle-row">
         <div>
           <div class="toggle-label">効果音</div>
@@ -59,7 +60,7 @@ export function renderSettings(state) {
 
     <!-- Stats -->
     <div class="card">
-      <div class="card-title">📊 統計</div>
+      <div class="card-title">${iconImg('📊', 'icon-section-title')} 統計</div>
       <div style="font-size:14px;">
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
           <span style="color:var(--text-secondary);">総記録日数</span>
@@ -86,7 +87,7 @@ export function renderSettings(state) {
 
     <!-- Data Reset -->
     <div class="card">
-      <div class="card-title">⚠️ データ</div>
+      <div class="card-title">${iconImg('⚠️', 'icon-section-title')} データ</div>
       <button class="btn-danger btn-full" id="set-reset-btn">データをリセット</button>
     </div>
   `;

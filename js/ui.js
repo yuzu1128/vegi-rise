@@ -1,6 +1,7 @@
 // ui.js - UI utilities for VegiRise (extracted from app.js to break circular dependencies)
 
 import { ACHIEVEMENT_CATEGORIES } from './achievements.js';
+import { iconImg } from './icon-map.js';
 
 // --- Toast ---
 export function showToast(message, type = 'info', duration = 3000) {
@@ -105,14 +106,14 @@ function _processNextAchievement() {
 
   const html = `
     <div style="text-align:center;">
-      <div style="font-size:64px;margin-bottom:16px;animation:glow 2s ease-in-out infinite;display:inline-block;">
-        ${achievement.icon}
+      <div style="margin-bottom:16px;animation:glow 2s ease-in-out infinite;display:inline-block;">
+        ${iconImg(achievement.icon, 'icon-badge-popup')}
       </div>
       <h2 style="color:var(--accent-yellow);margin-bottom:8px;">実績解除!</h2>
       <div style="font-size:18px;font-weight:700;margin-bottom:8px;">${achievement.name}</div>
       <div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">${achievement.description}</div>
       <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">
-        ${category.icon || ''} ${category.name || ''}
+        ${category.icon ? iconImg(category.icon, 'icon-cat-popup', '16') : ''} ${category.name || ''}
       </div>
       <button class="btn-primary btn-full" id="modal-close-btn">OK</button>
     </div>
