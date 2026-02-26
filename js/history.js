@@ -225,7 +225,10 @@ async function showDayDetail(dateStr, state) {
     html += `
       <div>
         <div class="detail-row">
-          <span>起床時間</span><span class="detail-row-value">${wakeup.time}</span>
+          <span>起床時間</span><span class="detail-row-value">${wakeup.wakeupTime || wakeup.time}</span>
+        </div>
+        <div class="detail-row">
+          <span>ベッドから出た時間</span><span class="detail-row-value">${wakeup.getUpTime || '--:--'}</span>
         </div>
         <div class="detail-row">
           <span>目標</span><span>${wakeup.goalTime}</span>

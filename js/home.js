@@ -99,7 +99,12 @@ export function renderHome(state) {
         <div class="wakeup-time" id="current-time">${timeStr}<span style="font-size:24px;opacity:0.5;">:${secStr}</span></div>
       </div>
 
-      <button class="wakeup-btn" id="wakeup-record-btn">この時間で起床を記録</button>
+      <div class="form-group" style="margin-top:16px;">
+        <label for="getup-time-input">ベッドから出た時間</label>
+        <input type="time" id="getup-time-input" class="form-input">
+      </div>
+
+      <button class="wakeup-btn" id="wakeup-record-btn">起床を記録</button>
 
       <div class="wakeup-meta">
         目標: ${settings.wakeupGoalTime || Constants.Wakeup.DEFAULT_GOAL}
@@ -116,6 +121,7 @@ export function initHome(state) {
   const sliderLabel = document.getElementById('veg-slider-label');
   const recordBtn = document.getElementById('veg-record-btn');
   const wakeupBtn = document.getElementById('wakeup-record-btn');
+  const getupTimeInput = document.getElementById('getup-time-input');
 
   const presetBtns = document.querySelectorAll('.preset-btn');
   const sliderMax = parseInt(slider.max);
@@ -242,16 +248,26 @@ export function initHome(state) {
     const wakeup = await DB.getWakeup(today);
     const statusEl = document.getElementById('wakeup-status');
     if (wakeup) {
+      const getUpTime = wakeup.getUpTime ? wakeup.getUpTime : '--:--';
       statusEl.innerHTML = `
-        <span class="wakeup-time recorded" style="font-size:20px;">${wakeup.time}</span>
-        <span style="color:var(--text-secondary);margin-left:8px;">スコア: ${wakeup.score}</span>
+        <div class="wakeup-recorded-info">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="wakeup-time recorded">${wakeup.wakeupTime}</span>
+            <span style="color:var(--text-secondary);">→</span>
+            <span class="wakeup-time recorded">${getUpTime}</span>
+          </div>
+          <span style="color:var(--text-secondary);margin-left:8px;">スコア: ${wakeup.score}</span>
+        </div>
       `;
       wakeupBtn.disabled = true;
       wakeupBtn.textContent = '記録済み';
+      getupTimeInput.disabled = true;
+      getupTimeInput.value = getUpTime;
     } else {
       statusEl.innerHTML = '';
       wakeupBtn.disabled = false;
-      wakeupBtn.textContent = 'この時間で起床を記録';
+      wakeupBtn.textContent = '起床を記録';
+      getupTimeInput.disabled = false;
     }
   }
 
@@ -290,16 +306,24 @@ export function initHome(state) {
     wakeupBtn.disabled = true;
     try {
       const now = new Date();
-      const time = formatTime(now);
+      const wakeupTime = formatTime(now);
       const today = getToday();
       const settings = await DB.getSettings();
-      const { score, diffMinutes } = Gamification.calculateWakeupScore(time, settings.wakeupGoalTime);
 
-      const result = await DB.setWakeup(today, time, settings.wakeupGoalTime, score, diffMinutes);
-      await processRecord('wakeup', { time, score: result.score }, state);
+      // Get user input for getUpTime
+      let getUpTime = getupTimeInput.value.trim();
+      if (!getUpTime) {
+        // Default to wakeup time if not specified
+        getUpTime = wakeupTime;
+      }
+
+      const { score, diffMinutes } = Gamification.calculateWakeupScore(wakeupTime, settings.wakeupGoalTime);
+
+      const result = await DB.setWakeup(today, wakeupTime, getUpTime, settings.wakeupGoalTime, score, diffMinutes);
+      await processRecord('wakeup', { time: wakeupTime, score: result.score }, state);
       await refreshState();
 
-      showToast(`起床記録: ${time} (スコア: ${result.score})`, 'success');
+      showToast(`起床記録: ${wakeupTime} (スコア: ${result.score})`, 'success');
       loadTodayData();
     } catch (e) {
       ErrorHandler.handle(e, '起床記録');
