@@ -101,10 +101,10 @@ export function renderHome(state) {
 
       <div class="wakeup-buttons">
         <button class="wakeup-btn secondary" id="wakeup-time-btn">起床した</button>
-        <button class="wakeup-btn secondary" id="getup-time-btn">ベッドから出た</button>
+        <button class="wakeup-btn secondary" id="getup-time-btn" style="display:none;">ベッドから出た</button>
       </div>
 
-      <button class="wakeup-btn primary" id="wakeup-record-btn">記録完了</button>
+      <button class="wakeup-btn primary" id="wakeup-record-btn" style="display:none;">記録完了</button>
 
       <div class="wakeup-meta">
         目標: ${settings.wakeupGoalTime || Constants.Wakeup.DEFAULT_GOAL}
@@ -269,16 +269,19 @@ export function initHome(state) {
           <span style="color:var(--text-secondary);margin-left:8px;">スコア: ${wakeup.score}</span>
         </div>
       `;
-      wakeupBtn.disabled = true;
-      wakeupBtn.textContent = '記録済み';
-      wakeupTimeBtn.disabled = true;
-      getupTimeBtn.disabled = true;
+      // Hide all buttons when recorded
+      wakeupTimeBtn.style.display = 'none';
+      getupTimeBtn.style.display = 'none';
+      wakeupBtn.style.display = 'none';
     } else {
       statusEl.innerHTML = '';
-      wakeupBtn.disabled = true;
-      wakeupBtn.textContent = '記録完了（両方入力）';
+      // Show only wakeup button initially
+      wakeupTimeBtn.style.display = '';
       wakeupTimeBtn.disabled = false;
-      getupTimeBtn.disabled = false;
+      wakeupTimeBtn.textContent = '起床した';
+      wakeupTimeBtn.classList.remove('active');
+      getupTimeBtn.style.display = 'none';
+      wakeupBtn.style.display = 'none';
     }
   }
 
@@ -317,7 +320,9 @@ export function initHome(state) {
     wakeupTimeRecorded = formatTime(new Date());
     wakeupTimeBtn.textContent = `${wakeupTimeRecorded} ✓`;
     wakeupTimeBtn.classList.add('active');
-    checkBothRecorded();
+    wakeupTimeBtn.disabled = true;
+    // Show getup button
+    getupTimeBtn.style.display = '';
   });
 
   // Getup time button - record current time as getup time
@@ -327,17 +332,11 @@ export function initHome(state) {
     getupTimeRecorded = formatTime(new Date());
     getupTimeBtn.textContent = `${getupTimeRecorded} ✓`;
     getupTimeBtn.classList.add('active');
-    checkBothRecorded();
+    getupTimeBtn.disabled = true;
+    // Show record button
+    wakeupBtn.style.display = '';
+    wakeupBtn.disabled = false;
   });
-
-  // Check if both times are recorded
-  function checkBothRecorded() {
-    if (wakeupTimeRecorded && getupTimeRecorded) {
-      wakeupBtn.disabled = false;
-      wakeupBtn.textContent = '記録完了';
-      wakeupBtn.classList.add('primary');
-    }
-  }
 
   // Record both times and save to DB
   wakeupBtn.addEventListener('click', async () => {
