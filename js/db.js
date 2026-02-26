@@ -74,21 +74,23 @@ export class DB {
 
         if (oldVersion < 3) {
           // 古いwakeupデータのtimeフィールドをwakeupTimeにリネーム
-          const tx = db.transaction('wakeups', 'readwrite');
-          const store = tx.objectStore('wakeups');
-          const request = store.openCursor();
-          request.onsuccess = (e) => {
-            const cursor = e.target.result;
-            if (cursor) {
-              const data = cursor.value;
-              if (data.time && !data.wakeupTime) {
-                data.wakeupTime = data.time;
-                delete data.time;
-                cursor.update(data);
+          // onupgradeneeded内では既存のトランザクション（event.target.transaction）を使用する必要がある
+          if (event.target.transaction) {
+            const store = event.target.transaction.objectStore('wakeups');
+            const request = store.openCursor();
+            request.onsuccess = (e) => {
+              const cursor = e.target.result;
+              if (cursor) {
+                const data = cursor.value;
+                if (data.time && !data.wakeupTime) {
+                  data.wakeupTime = data.time;
+                  delete data.time;
+                  cursor.update(data);
+                }
+                cursor.continue();
               }
-              cursor.continue();
-            }
-          };
+            };
+          }
         }
       };
 
