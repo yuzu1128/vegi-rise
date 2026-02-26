@@ -46,3 +46,31 @@
   color: var(--text-muted);
   cursor: not-allowed;
 }
+
+.wakeup-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.wakeup-btn.secondary {
+  flex: 1;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  padding: 14px;
+  margin-top: 0;
+}
+
+.wakeup-btn.secondary:active {
+  background: var(--bg-tertiary);
+}
+
+.wakeup-btn.secondary.active {
+  background: var(--accent-blue);
+  color: var(--bg-primary);
+}
+
+.wakeup-btn.primary {
+  width: 100%;
+}
