@@ -6,6 +6,8 @@ import { formatGrams } from './utils.js';
 import { showToast } from './ui.js';
 import { refreshState } from './app.js';
 import { iconImg } from './icon-map.js';
+import { TimeValidator } from './validators.js';
+import { ErrorHandler } from './error-handler.js';
 
 export function renderSettings(state) {
   const settings = state.settings || {};
@@ -137,7 +139,11 @@ export function initSettings(state) {
 
   wakeupInput.addEventListener('change', async () => {
     const time = wakeupInput.value;
-    if (!time) return;
+    const validation = TimeValidator.validate(time);
+    if (!validation.valid) {
+      showToast(validation.message, 'warning');
+      return;
+    }
     const settings = await DB.getSettings();
     settings.wakeupGoalTime = time;
     await DB.saveSettings(settings);
@@ -153,16 +159,15 @@ export function initSettings(state) {
     showToast(enabled ? 'サウンドON' : 'サウンドOFF', 'info');
   });
 
-  resetBtn.addEventListener('click', () => {
+  resetBtn.addEventListener('click', async () => {
     if (confirm('全てのデータをリセットしますか?\nこの操作は取り消せません。')) {
       if (confirm('本当にリセットしますか? すべての記録・実績が失われます。')) {
-        // Close DB connection before deleting
-        DB.close();
-        indexedDB.deleteDatabase('vegi-rise-db');
-        showToast('データをリセットしました。リロードします...', 'info');
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
+        await ErrorHandler.safeExecute(async () => {
+          DB.close();
+          indexedDB.deleteDatabase('vegi-rise-db');
+          showToast('データをリセットしました。リロードします...', 'info');
+          setTimeout(() => location.reload(), 1000);
+        }, 'データリセット');
       }
     }
   });

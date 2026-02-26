@@ -9,12 +9,15 @@ import { showToast } from './ui.js';
 import { refreshState, rerender } from './app.js';
 import { iconImg } from './icon-map.js';
 import { renderGoalRow } from './templates.js';
+import { VegetableValidator } from './validators.js';
+import { ErrorHandler } from './error-handler.js';
+import { Constants, DEFAULT_VEG_GOALS } from './constants.js';
 
 export function renderHome(state) {
   const gs = state.gameState || {};
   const settings = state.settings || {};
   const levelInfo = Gamification.calculateLevel(gs.xp || 0);
-  const vegGoals = settings.vegetableGoals || { minimum: 350, standard: 500, target: 800 };
+  const vegGoals = settings.vegetableGoals || DEFAULT_VEG_GOALS;
 
   const now = new Date();
   const { time: timeStr, seconds: secStr } = formatTimeWithSeconds(now);
@@ -46,24 +49,19 @@ export function renderHome(state) {
 
       <!-- Preset Buttons -->
       <div class="preset-grid" id="preset-buttons">
-        <button class="preset-btn" data-grams="50">50g</button>
-        <button class="preset-btn" data-grams="100">100g</button>
-        <button class="preset-btn active" data-grams="200">200g</button>
-        <button class="preset-btn" data-grams="350">350g</button>
-        <button class="preset-btn" data-grams="500">500g</button>
-        <button class="preset-btn" data-grams="800">800g</button>
+        ${Constants.Vegetable.PRESETS.map((grams, index) => `<button class="preset-btn${index === 2 ? ' active' : ''}" data-grams="${grams}">${grams}g</button>`).join('')}
       </div>
 
       <div class="slider-container">
         <label>
           <span>摂取量</span>
-          <span class="slider-value" id="veg-slider-label">200g</span>
+          <span class="slider-value" id="veg-slider-label">${Constants.Vegetable.DEFAULT_INPUT}g</span>
         </label>
-        <input type="range" id="veg-slider" min="0" max="1500" step="10" value="200">
+        <input type="range" id="veg-slider" min="${Constants.Vegetable.MIN_GRAMS}" max="${Constants.Vegetable.MAX_GRAMS}" step="${Constants.Vegetable.STEPS.SLIDER}" value="${Constants.Vegetable.DEFAULT_INPUT}">
       </div>
 
       <div class="veg-input-row">
-        <input type="number" id="veg-input" min="0" max="9999" step="1" value="200" class="veg-input-field">
+        <input type="number" id="veg-input" min="${Constants.Vegetable.MIN_GRAMS}" max="${Constants.Vegetable.MAX_GRAMS}" step="${Constants.Vegetable.STEPS.INPUT}" value="${Constants.Vegetable.DEFAULT_INPUT}" class="veg-input-field">
         <span class="veg-input-unit">g</span>
         <button class="btn-primary veg-record-btn" id="veg-record-btn">${iconImg('🥦', 'icon-section-title')} 記録</button>
       </div>
@@ -104,7 +102,7 @@ export function renderHome(state) {
       <button class="wakeup-btn" id="wakeup-record-btn">この時間で起床を記録</button>
 
       <div class="wakeup-meta">
-        目標: ${settings.wakeupGoalTime || '06:00'}
+        目標: ${settings.wakeupGoalTime || Constants.Wakeup.DEFAULT_GOAL}
       </div>
 
       <div id="wakeup-status" class="wakeup-status-area"></div>
@@ -160,7 +158,12 @@ export function initHome(state) {
   });
 
   input.addEventListener('input', () => {
-    setGrams(input.value);
+    let val = parseInt(input.value) || 0;
+    val = VegetableValidator.clamp(val);
+    if (val !== parseInt(input.value) || 0) {
+      input.value = val;
+    }
+    setGrams(val);
   });
 
   updateSliderTrack();
@@ -258,8 +261,9 @@ export function initHome(state) {
   recordBtn.addEventListener('click', async () => {
     if (recordBtn.disabled) return;
     const grams = parseInt(input.value) || 0;
-    if (grams <= 0) {
-      showToast('0g以上の数値を入力してください', 'warning');
+    const validation = VegetableValidator.validate(grams);
+    if (!validation.valid) {
+      showToast(validation.message, 'warning');
       return;
     }
 
@@ -270,7 +274,7 @@ export function initHome(state) {
       await refreshState();
 
       // Reset input
-      setGrams(200);
+      setGrams(Constants.Vegetable.DEFAULT_INPUT);
 
       showToast(`${grams}gを記録しました!`, 'success');
       loadTodayData();
@@ -298,8 +302,7 @@ export function initHome(state) {
       showToast(`起床記録: ${time} (スコア: ${result.score})`, 'success');
       loadTodayData();
     } catch (e) {
-      console.error('Wakeup record failed', e);
-      showToast('記録に失敗しました', 'error');
+      ErrorHandler.handle(e, '起床記録');
       wakeupBtn.disabled = false;
     }
   });

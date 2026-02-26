@@ -2,9 +2,10 @@
 
 import { ACHIEVEMENT_CATEGORIES } from './achievements.js';
 import { iconImg } from './icon-map.js';
+import { TOAST_TYPES } from './constants.js';
 
 // --- Toast ---
-export function showToast(message, type = 'info', duration = 3000) {
+export function showToast(message, type = TOAST_TYPES.INFO, duration = 3000) {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;

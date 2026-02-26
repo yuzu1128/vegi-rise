@@ -7,6 +7,7 @@ import { renderHome, initHome } from './home.js';
 import { renderHistory, initHistory } from './history.js';
 import { renderAchievements, initAchievements } from './achieve-page.js';
 import { renderSettings, initSettings } from './settings.js';
+import { ErrorHandler } from './error-handler.js';
 
 // Page renderers map
 const pages = {
@@ -68,27 +69,30 @@ export function rerender() {
 
 // Initialize app
 async function init() {
-  await DB.init();
-  Sound.init();
+  try {
+    await DB.init();
+    Sound.init();
+    await Store.refresh();
 
-  await Store.refresh();
+    // Sync sound enabled state from settings
+    const state = Store.getState();
+    if (state.settings.soundEnabled === false) {
+      Sound.enabled = false;
+    }
 
-  // Sync sound enabled state from settings
-  const state = Store.getState();
-  if (state.settings.soundEnabled === false) {
-    Sound.enabled = false;
-  }
-
-  // Set up navigation
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      Sound.click();
-      navigate(btn.dataset.page);
+    // Set up navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Sound.click();
+        navigate(btn.dataset.page);
+      });
     });
-  });
 
-  // Initial render
-  navigate('home');
+    // Initial render
+    navigate('home');
+  } catch (e) {
+    ErrorHandler.handle(e, 'アプリ初期化');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

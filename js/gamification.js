@@ -1,19 +1,10 @@
 // gamification.js - XP, Level, Streak, Score calculations for VegiRise
 
+import { Constants } from './constants.js';
+
 export class Gamification {
   // XP rewards for different actions
-  static XP = {
-    vegetableRecord: 10,    // Record vegetables once
-    wakeupRecord: 15,       // Record wakeup time
-    goalMinimum: 20,        // Minimum goal achieved
-    goalStandard: 35,       // Standard goal achieved
-    goalTarget: 50,         // Target goal achieved
-    perfectWakeup: 25,      // Wakeup score >= 90
-    combo: 30,              // Both veggie goal + perfect wakeup on same day
-    streakBonus3: 50,       // 3-day streak bonus
-    streakBonus7: 100,      // 7-day streak bonus
-    streakBonus30: 300,     // 30-day streak bonus
-  };
+  static XP = Constants.Gamification.XP;
 
   static getXPForLevel(level) {
     // Cumulative XP needed to reach this level

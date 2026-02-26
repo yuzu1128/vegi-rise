@@ -1,17 +1,19 @@
 // db.js - IndexedDB wrapper for VegiRise
 
 import { getToday as _getToday } from './utils.js';
+import { DEFAULT_VEG_GOALS, Constants } from './constants.js';
 
 // Re-export getToday for backward compatibility
 export const getToday = _getToday;
 
 const DB_NAME = 'vegi-rise-db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 const DEFAULT_SETTINGS = {
-  vegetableGoals: { minimum: 350, standard: 500, target: 800 },
-  wakeupGoalTime: '06:00',
-  soundEnabled: true
+  vegetableGoals: { ...DEFAULT_VEG_GOALS },
+  wakeupGoalTime: Constants.Wakeup.DEFAULT_GOAL,
+  soundEnabled: true,
+  getUpTimeEnabled: true
 };
 
 const DEFAULT_GAME_STATE = {
@@ -68,6 +70,25 @@ export class DB {
           if (!db.objectStoreNames.contains('dailyGoals')) {
             db.createObjectStore('dailyGoals', { keyPath: 'date' });
           }
+        }
+
+        if (oldVersion < 3) {
+          // 古いwakeupデータのtimeフィールドをwakeupTimeにリネーム
+          const tx = db.transaction('wakeups', 'readwrite');
+          const store = tx.objectStore('wakeups');
+          const request = store.openCursor();
+          request.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              const data = cursor.value;
+              if (data.time && !data.wakeupTime) {
+                data.wakeupTime = data.time;
+                delete data.time;
+                cursor.update(data);
+              }
+              cursor.continue();
+            }
+          };
         }
       };
 
@@ -202,9 +223,9 @@ export class DB {
 
   // --- Wakeup records ---
 
-  static async setWakeup(date, time, goalTime, score, diffMinutes) {
+  static async setWakeup(date, wakeupTime, getUpTime, goalTime, score, diffMinutes) {
     try {
-      const record = { date, time, goalTime, diffMinutes, score };
+      const record = { date, wakeupTime, getUpTime, goalTime, diffMinutes, score };
       await this._putRaw('wakeups', record);
       return record;
     } catch (e) {
@@ -343,7 +364,11 @@ export class DB {
       for (const wakeup of wakeupRecords) {
         const dayData = data.get(wakeup.date);
         if (dayData) {
-          dayData.wakeup = { time: wakeup.time, score: wakeup.score };
+          dayData.wakeup = {
+            time: wakeup.wakeupTime || wakeup.time,  // 旧データ互換
+            score: wakeup.score,
+            getUpTime: wakeup.getUpTime
+          };
         }
       }
 
