@@ -236,6 +236,44 @@ export class DB {
     }
   }
 
+  static async setWakeupTime(date, wakeupTime) {
+    try {
+      const existing = await this.getWakeup(date);
+      const record = {
+        date,
+        wakeupTime,
+        getUpTime: existing?.getUpTime || null,
+        goalTime: existing?.goalTime || null,
+        diffMinutes: existing?.diffMinutes || null,
+        score: existing?.score || null
+      };
+      await this._putRaw('wakeups', record);
+      return record;
+    } catch (e) {
+      console.error('DB.setWakeupTime failed', e);
+      throw e;
+    }
+  }
+
+  static async setGetUpTime(date, getUpTime, goalTime, score, diffMinutes) {
+    try {
+      const existing = await this.getWakeup(date);
+      const record = {
+        date,
+        wakeupTime: existing?.wakeupTime || getUpTime,
+        getUpTime,
+        goalTime,
+        diffMinutes,
+        score
+      };
+      await this._putRaw('wakeups', record);
+      return record;
+    } catch (e) {
+      console.error('DB.setGetUpTime failed', e);
+      throw e;
+    }
+  }
+
   static async getWakeup(date) {
     try {
       return this._getRaw('wakeups', date);

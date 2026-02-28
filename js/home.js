@@ -104,8 +104,6 @@ export function renderHome(state) {
         <button class="wakeup-btn secondary" id="getup-time-btn" style="display:none;">ベッドから出た</button>
       </div>
 
-      <button class="wakeup-btn primary" id="wakeup-record-btn" style="display:none;">記録完了</button>
-
       <div class="wakeup-meta">
         目標: ${settings.wakeupGoalTime || Constants.Wakeup.DEFAULT_GOAL}
       </div>
@@ -120,16 +118,11 @@ export function initHome(state) {
   const input = document.getElementById('veg-input');
   const sliderLabel = document.getElementById('veg-slider-label');
   const recordBtn = document.getElementById('veg-record-btn');
-  const wakeupBtn = document.getElementById('wakeup-record-btn');
   const wakeupTimeBtn = document.getElementById('wakeup-time-btn');
   const getupTimeBtn = document.getElementById('getup-time-btn');
 
   const presetBtns = document.querySelectorAll('.preset-btn');
   const sliderMax = parseInt(slider.max);
-
-  // Temporary storage for wakeup/getup times before recording
-  let wakeupTimeRecorded = null;
-  let getupTimeRecorded = null;
 
   // Update slider track progress
   function updateSliderTrack() {
@@ -253,11 +246,11 @@ export function initHome(state) {
     const wakeup = await DB.getWakeup(today);
     const statusEl = document.getElementById('wakeup-status');
 
-    // Reset temp storage
-    wakeupTimeRecorded = null;
-    getupTimeRecorded = null;
+    const hasWakeupTime = !!wakeup?.wakeupTime;
+    const hasGetUpTime = !!wakeup?.getUpTime;
+    const isComplete = hasWakeupTime && hasGetUpTime && wakeup?.score !== null;
 
-    if (wakeup) {
+    if (isComplete) {
       const getUpTime = wakeup.getUpTime ? wakeup.getUpTime : '--:--';
       statusEl.innerHTML = `
         <div class="wakeup-recorded-info">
@@ -269,10 +262,26 @@ export function initHome(state) {
           <span style="color:var(--text-secondary);margin-left:8px;">スコア: ${wakeup.score}</span>
         </div>
       `;
-      // Hide all buttons when recorded
+      // Hide all buttons when complete
       wakeupTimeBtn.style.display = 'none';
       getupTimeBtn.style.display = 'none';
-      wakeupBtn.style.display = 'none';
+    } else if (hasWakeupTime) {
+      // Show partial record state
+      statusEl.innerHTML = `
+        <div class="wakeup-recorded-info partial">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="wakeup-time recorded">${wakeup.wakeupTime}</span>
+            <span style="color:var(--text-secondary);">→</span>
+            <span style="color:var(--text-secondary);font-style:italic;">--:-- (待機中)</span>
+          </div>
+        </div>
+      `;
+      // Hide wakeup button, show getup button
+      wakeupTimeBtn.style.display = 'none';
+      getupTimeBtn.style.display = '';
+      getupTimeBtn.disabled = false;
+      getupTimeBtn.textContent = 'ベッドから出た';
+      getupTimeBtn.classList.remove('active');
     } else {
       statusEl.innerHTML = '';
       // Show only wakeup button initially
@@ -281,7 +290,6 @@ export function initHome(state) {
       wakeupTimeBtn.textContent = '起床した';
       wakeupTimeBtn.classList.remove('active');
       getupTimeBtn.style.display = 'none';
-      wakeupBtn.style.display = 'none';
     }
   }
 
@@ -313,62 +321,51 @@ export function initHome(state) {
     }
   });
 
-  // Wakeup time button - record current time as wakeup time
-  wakeupTimeBtn.addEventListener('click', () => {
+  // Wakeup time button - record current time to DB immediately
+  wakeupTimeBtn.addEventListener('click', async () => {
     if (wakeupTimeBtn.disabled) return;
     Sound.click();
-    wakeupTimeRecorded = formatTime(new Date());
-    wakeupTimeBtn.textContent = `${wakeupTimeRecorded} ✓`;
-    wakeupTimeBtn.classList.add('active');
-    wakeupTimeBtn.disabled = true;
-    // Show getup button
-    getupTimeBtn.style.display = '';
-  });
 
-  // Getup time button - record current time as getup time
-  getupTimeBtn.addEventListener('click', () => {
-    if (getupTimeBtn.disabled) return;
-    Sound.click();
-    getupTimeRecorded = formatTime(new Date());
-    getupTimeBtn.textContent = `${getupTimeRecorded} ✓`;
-    getupTimeBtn.classList.add('active');
-    getupTimeBtn.disabled = true;
-    // Show record button
-    wakeupBtn.style.display = '';
-    wakeupBtn.disabled = false;
-  });
+    const wakeupTime = formatTime(new Date());
+    const today = getToday();
 
-  // Record both times and save to DB
-  wakeupBtn.addEventListener('click', async () => {
-    if (wakeupBtn.disabled) return;
-
-    wakeupBtn.disabled = true;
     try {
-      const today = getToday();
-      const settings = await DB.getSettings();
-
-      // Use recorded times
-      const finalWakeupTime = wakeupTimeRecorded || formatTime(new Date());
-      const finalGetupTime = getupTimeRecorded || finalWakeupTime;
-
-      const { score, diffMinutes } = Gamification.calculateWakeupScore(finalWakeupTime, settings.wakeupGoalTime);
-
-      const result = await DB.setWakeup(today, finalWakeupTime, finalGetupTime, settings.wakeupGoalTime, score, diffMinutes);
-      await processRecord('wakeup', { time: finalWakeupTime, score: result.score }, state);
+      await DB.setWakeupTime(today, wakeupTime);
+      await processRecord('wakeup', { time: wakeupTime }, state);
       await refreshState();
 
-      showToast(`起床記録: ${finalWakeupTime} → ${finalGetupTime} (スコア: ${result.score})`, 'success');
+      showToast(`起床: ${wakeupTime}`, 'success');
       loadTodayData();
     } catch (e) {
       ErrorHandler.handle(e, '起床記録');
-      wakeupBtn.disabled = false;
-      // Re-enable buttons for retry
-      if (wakeupTimeRecorded) {
-        wakeupTimeBtn.disabled = false;
+    }
+  });
+
+  // Getup time button - record current time to DB immediately
+  getupTimeBtn.addEventListener('click', async () => {
+    if (getupTimeBtn.disabled) return;
+    Sound.click();
+
+    const getUpTime = formatTime(new Date());
+    const today = getToday();
+
+    try {
+      const settings = await DB.getSettings();
+      const wakeup = await DB.getWakeup(today);
+      if (!wakeup?.wakeupTime) {
+        showToast('起床時間が記録されていません', 'warning');
+        return;
       }
-      if (getupTimeRecorded) {
-        getupTimeBtn.disabled = false;
-      }
+
+      const { score, diffMinutes } = Gamification.calculateWakeupScore(wakeup.wakeupTime, settings.wakeupGoalTime);
+      await DB.setGetUpTime(today, getUpTime, settings.wakeupGoalTime, score, diffMinutes);
+      await processRecord('wakeup', { time: wakeup.wakeupTime, score }, state);
+      await refreshState();
+
+      showToast(`ベッドから出た: ${getUpTime} (スコア: ${score})`, 'success');
+      loadTodayData();
+    } catch (e) {
+      ErrorHandler.handle(e, 'ベッドから出た記録');
     }
   });
 
